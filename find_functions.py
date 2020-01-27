@@ -14,20 +14,22 @@ soup = BeautifulSoup(page.content, 'lxml')
 
 
 #-------------------
-def find_identifier
+def find_identifier():
     ids = 0
     try:
-        for div in soup.find_all(name='div', attrs='id'):
+        for div in soup.find_all(name='div',attrs={'class':'row'}):
             #Debug print
-            print(div.text.strip())
+            print(div['id'])
             #return a.text.strip()
-            titles = titles + 1
+            ids = ids + 1
     except:
         #Debug print
         print('Not found')
         #return 'Not found'
     print()
-    print(titles)
+    print(ids)
+    print('-----------------------------------------')
+    
 
 #-------------------
 def find_company():
@@ -45,11 +47,31 @@ def find_company():
         return 'Not found'
     print()
     print(companies)
+    print('-----------------------------------------')
 
 
 #-------------------
-##def find_location
-##    location = 
+def find_location():
+    locations = 0
+    try:
+        for div in soup.find_all(name='div',attrs={'class':'location'}):
+            #Debug print
+            print(div.text.strip())
+            #return div.text.strip()
+            locations = locations + 1
+        for span in soup.find_all(name='span',attrs={'class':'location'}):
+            #Debug print
+            print(span.text.strip())
+            #return span.text.strip()
+            locations = locations + 1
+        
+    except:
+        #Debug print
+        print('Not found')
+        #return 'Not found'
+    print()
+    print(locations)
+    print('-----------------------------------------')
 
 
 #-------------------
@@ -67,30 +89,73 @@ def find_title():
         #return 'Not found'
     print()
     print(titles)
+    print('-----------------------------------------')
 
 
 #-------------------
-##def find_description
-##    description = 
+def find_description():
+    descriptions = 0
+    try:
+        for div in soup.find_all(name='div',attrs={'class':'summary'}):
+            #Debug print
+            print(div.text.strip())
+            #return span.text.strip()
+            descriptions = descriptions + 1
+    except:
+        #Debug print
+        print('Not found')
+        #return 'Not found'
+    print()
+    print(descriptions)
+    print('-----------------------------------------')
 
 
 #-------------------
-##def find_date
-##    date = 
+def find_date():
+    dates = 0
+    try:
+        for span in soup.find_all(name='span',class_='date'):
+            #Debug print
+            print(span.text.strip())
+            #return span.text.strip()
+            dates = dates + 1
+    except:
+        #Debug print
+        print('Not found')
+        #return 'Not found'
+    print()
+    print(dates)
+    print('-----------------------------------------')
 
 
 #-------------------
-##def find_link
-##    link = 
+def find_link():
+    links = 0
+    try:
+        for a in soup.find_all(name='a',attrs={'data-tn-element':'jobTitle'}):
+            #Debug print
+            print(a['href'])
+            #return a.text.strip()
+            links = links + 1
+    except:
+        #Debug print
+        print('Not found')
+        #return 'Not found'
+    print()
+    print(links)
+    print('-----------------------------------------')
 
 
 #-------------------
 ##def find_fulltext
 ##    fulltext = 
 
-find_title()
-print('-----------------------------------------')
-find_company()
 
-
-
+##debug set
+##find_identifier()
+##find_title()
+##find_company()
+##find_date()
+##find_description()
+##find_location()
+##find_link()
