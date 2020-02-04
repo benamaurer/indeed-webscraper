@@ -206,7 +206,7 @@ df.drop_duplicates(subset = 'pid', inplace = True)
 result_count = len(df.index)
 
 #saving to csv
-df.to_csv('Search_' + str(datetime.date.today()) + '.csv', encoding='utf-8-sig')
+df.to_csv('Search_' + str(time.strftime('%Y-%m-%d_%H.%M)) + '.csv', encoding='utf-8-sig')
 #print('csv created')
 
 
