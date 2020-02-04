@@ -1,5 +1,10 @@
-#importing modules
+#IMPORTING MODULES
+#---------------------------------------------
 import json
+import datetime
+import time
+import math
+import pandas as pd
 import requests
 import lxml
 from bs4 import BeautifulSoup
@@ -7,6 +12,9 @@ from find_functions import *
 
 #placeholder to import parameters
 
+
+##LOADING PARAMETERS FROM JSON
+#---------------------------------------------
 with open('Parameters.json') as f:
        data = json.load(f)
        cities = data["cities_to_search"]
@@ -51,25 +59,139 @@ input()
 ##MAIN SCRAPER FUNCTION
 #--------------------------------------------------
 
-    #Prints status message with number of cities to search and lists cities
+
+#Prints status message with number of cities to search and lists cities
 print("Starting search in " + str(len(cities)) + " cities:")
 
+
 #debug link
-link = 'http://www.google.com'
+#link = 'http://www.google.com'
+#link = ('http://www.indeed.com/jobs?as_and=' + job_keywords_1 + '&radius=100' + '&l=' + str(city) + '&start=' + '&start=' + str(page))
 
-    #fetches page data using requests and displays page load status
-page = requests.get(link)
-if str(page) == '<Response [200]>':
-    print('Connected...')
+
+#setting up dataframe in pandas
+df = pd.DataFrame(columns = ['pid', 'Company', 'Location', 'Job Title', 'Days ago posted', 'Date Added', 'Link', 'Description'])
+
+
+#debug to check if functions are imported
+#is_imported()
+
+
+#checking for internet connection
+test_connection = requests.get('http://google.com')
+if str(test_connection) == '<Response [200]>':
+       print('Connected...')
+       print()
+       print()
+       print('-------------------------------------------------------')
+       
 else:
-    print('Error: unable to reach page.')
+       print('Unable to connect to page, exiting.')
+       exit
 
 
+#beginning counts for info readout
+city_complete = 0
+total_count = 0
+city_results = 0
 
-##jobs - job_identifier()
-##
-##for job in jobs:
-##
-##        for city in cities:
-##
-##        
+#begin search loop: -> city -> pages
+for city in cities:
+
+       #debug print
+       #print(city)
+       starting_link = ('http://www.indeed.com/jobs?as_and=' + job_keywords_1 + '&radius=' + range_mi + '&l=' + str(city) + '&start=' + '&start=1')
+       total_pages = find_search_pages(starting_link)
+       
+
+       #debug pring
+       #print(pages)
+       
+       #updating counts
+       city_complete = city_complete + 1
+
+       #looping for each page
+       for page_number in range(0, total_pages):
+
+              #building link and requesting
+              link = ('http://www.indeed.com/jobs?as_and=' + str(job_keywords_1) + '&radius=100' + '&l=' + str(city) + '&start=' + str(page_number*10))
+              page = requests.get(link)
+              #print(link)
+
+
+              #waiting 1 second between pages
+              time.sleep(1)
+              
+
+              full_soup = BeautifulSoup(page.content, 'lxml')
+
+              #list of pids from each page
+              listings = []
+
+              #appending pids to list in for loop
+              for div in full_soup.find_all(name='div',attrs={'class':'row'}):
+                     #Debug print
+                     #print(div['id'])
+                     listings.append(div['id'])
+
+              #print(listings)
+                     
+              #ensuring non-blank results
+              if(len(listings) == 0):
+                     break
+
+              #loop to search listings using pid
+              for listing in listings:
+
+                     soup = full_soup.find(name='div', attrs={'id':listing})
+
+                     #print(soup)
+                     #print(listing)
+
+                     #updating counts
+                     total_count = total_count + 1
+            
+                     #numbering to increment row in df
+                     num = (len(df) + 1)
+                     
+                     #list of data appended for each pid
+                     job_data = []
+
+                     #returning results from find_functions
+                     job_data.append(listing)
+                     job_data.append(find_company(soup))
+                     job_data.append(find_location(soup))
+                     job_data.append(find_title(soup))
+                     job_data.append(find_date(soup))
+                     job_data.append(datetime.date.today())
+                     job_data.append(find_link(soup))
+                     job_data.append(find_description(soup))
+
+                     df.loc[num] = job_data
+
+       #removing duplicate results
+       df.drop_duplicates(subset = 'pid', inplace = True)
+       city_results = (len(df.index) - city_results)        
+       print('{:<20s}{:>4s}{:>20s}{:>17s}'.format(city, '(' + str(city_complete) + '/' + str(len(cities)) + ')','completed, with',str(city_results) + ' results.'))
+
+       
+
+#counting total results
+result_count = len(df.index)
+
+
+#saving to csv
+df.to_csv('Search_' + str(datetime.date.today()) + '.csv', encoding='utf-8-sig')
+#print('csv created')
+
+
+##FINISH STATUS MESSAGE
+#--------------------------------------------------
+print()
+print('-------------------------------------------------------')
+print('Search of ' + str(len(cities)) + ' cities completed with ' + str(result_count) + ' results.')
+print('-------------------------------------------------------')
+                     
+
+                     
+
