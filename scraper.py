@@ -1,6 +1,7 @@
 #IMPORTING MODULES
 #---------------------------------------------
 import json
+import os
 import datetime
 import time
 import math
@@ -41,7 +42,7 @@ print()
 print()
 print('Current search parameters from JSON:')
 print('-------------------------------------------------------')
-print('Cities to search: \t', end='')
+print('Locations to search: \t', end='')
 print_cities()
 print('Job query set 1: \t' + job_keywords_1 + '.')
 print('Job query set 2: \t' + job_keywords_2 + '.')
@@ -50,8 +51,8 @@ print('Exclusion criteria: \t' + excluded_words + '.')
 print('-------------------------------------------------------')
 print()
 print()
-print('To start search press enter...')
-input()
+#print('To start search press enter...')
+#input()
 
 
 
@@ -205,6 +206,9 @@ df.drop_duplicates(subset = 'pid', inplace = True)
 #counting total results
 result_count = len(df.index)
 
+#change directory to results file
+os.chdir(str(os.getcwd()) + '/Search_results')
+
 #saving to csv
 df.to_csv('Search_' + str(time.strftime('%Y-%m-%d_%H.%M')) + '.csv', encoding='utf-8-sig')
 #print('csv created')
@@ -214,9 +218,9 @@ df.to_csv('Search_' + str(time.strftime('%Y-%m-%d_%H.%M')) + '.csv', encoding='u
 #--------------------------------------------------
 print()
 print('-------------------------------------------------------')
-print('Search of ' + str(len(cities)) + ' cities completed with ' + str(result_count) + ' results. (duplicates removed)')
+print('Search of ' + str(len(cities)) + ' locations completed with ' + str(result_count) + ' results. (duplicates removed)')
 print('-------------------------------------------------------')
                      
-
+exit()
                      
 
